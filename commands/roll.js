@@ -11,13 +11,15 @@ const roll = {
       return;
     }
 
-    const [, diceCount = 1, faceCount] = parsed;
+    const [, diceCount = 1, faceCount] = parsed.map(Number);
     const throws = Array(diceCount);
     let total = 0;
 
     for (let i = 0; i < diceCount; i += 1) {
-      throws[i] = 1 + Math.floor(Math.random() * faceCount);
-      total += throws[i];
+      const result = 1 + Math.floor(Math.random() * faceCount);
+
+      throws[i] = mapResult(result, faceCount);
+      total += result;
     }
 
     if (diceCount < 2) {
@@ -25,8 +27,20 @@ const roll = {
       return;
     }
 
-    await rtm.sendMessage(`:d20: \`${throws.join('` + `')}\` = \`${total}\``, channel);
+    await rtm.sendMessage(`:d20: ${throws.join(' + ')} = \`${total}\``, channel);
   },
+};
+
+const mapResult = (result, faceCount) => {
+  if (result === faceCount) {
+    return ':fo_cool:';
+  }
+
+  if (result === 1) {
+    return ':fo_nope:'
+  }
+
+  return `\`${result}\``;
 };
 
 module.exports = roll;
