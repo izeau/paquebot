@@ -33,7 +33,7 @@ rtm.on('message', async ({ type, channel, user, text }) => {
     return;
   }
 
-  const [command] = text.match(/^![a-z]{0,32}/);
+  const [command] = text.match(/^![0-9a-z]{0,32}/);
   const args = parseArgs(text);
 
   if (!commands.has(command)) {
