@@ -4,7 +4,7 @@ const roll = {
   command: '!roll',
   args: [{ name: 'expr', required: true }],
   help: 'Roll the dice!',
-  async run([expr], rtm, user, channel) {
+  async run([expr], { rtm, channel }) {
     const parsed = expr.match(/^([1-9][0-9]?)?d(2|4|6|8|10|12|20|100)$/);
 
     if (parsed === null) {

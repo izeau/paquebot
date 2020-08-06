@@ -4,7 +4,7 @@ const fancy = {
   command: '!fancy',
   args: [{ name: 'text', required: true, rest: true }],
   help: '𝓘’𝓶:space:𝓼𝓸:space:𝓯𝓪𝓷𝓬𝔂,:space:𝔂𝓸𝓾:space:𝓬𝓪𝓷’𝓽:space:𝓮𝓿𝓮𝓷.',
-  async run([...text], rtm, user, channel) {
+  async run([...text], { rtm, channel }) {
     if (text.length < 1) {
       return;
     }

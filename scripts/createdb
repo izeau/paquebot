@@ -1,0 +1,19 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const sqlite3 = require('sqlite3');
+const db = new sqlite3.Database('paquebot.db');
+
+db.serialize(() => {
+  db.run(`
+    create table bestof (
+      ts       varchar(17) primary key,
+      added_by varchar(9),
+      author   varchar(9),
+      message  text
+    ) without rowid
+  `);
+});
+
+db.close();

@@ -1,10 +1,14 @@
 'use strict';
 
+const sqlite3 = require('sqlite3');
 const { RTMClient } = require('@slack/rtm-api');
+const { WebClient } = require('@slack/web-api');
 const { readdirSync } = require('fs');
 
 const token = process.env.SLACK_TOKEN;
 const rtm = new RTMClient(token);
+const web = new WebClient(token);
+const db = new sqlite3.Database('paquebot.db', sqlite3.OPEN_READWRITE);
 
 const panic = exception => {
   process.stderr.write(exception.stack);
@@ -37,11 +41,11 @@ rtm.on('message', async ({ type, channel, user, text }) => {
   const args = parseArgs(text);
 
   if (!commands.has(command)) {
-    await commands.get('!help').run([command], rtm, user, channel, commands);
+    await commands.get('!help').run([command], { rtm, channel, commands });
     return;
   }
 
-  commands.get(command).run(args, rtm, user, channel, commands);
+  commands.get(command).run(args, { db, web, rtm, user, channel, commands });
 });
 
 const parseArgs = text => {

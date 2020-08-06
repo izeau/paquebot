@@ -8,7 +8,7 @@ const zalgo = {
   command: '!zalgo',
   args: [{ name: 'text', required: true, rest: true }],
   help: 'He comes.',
-  async run([...text], rtm, user, channel) {
+  async run([...text], { rtm, channel }) {
     if (text.length < 1) {
       return;
     }

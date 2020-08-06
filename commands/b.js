@@ -4,7 +4,7 @@ const b = {
   command: '!b',
   args: [{ name: 'text', required: true, rest: true }],
   help: 'Enlarge your text.',
-  async run([...text], rtm, user, channel) {
+  async run([...text], { rtm, channel }) {
     if (text.length < 1) {
       return;
     }

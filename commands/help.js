@@ -4,7 +4,7 @@ const help = {
   command: '!help',
   args: [{ name: 'command', required: false }],
   help: 'Print this help message.',
-  async run([command], rtm, user, channel, commands) {
+  async run([command], { rtm, channel, commands }) {
     if (command != null) {
       const commandWithBang = command.startsWith('!') ? command : `!${command}`;
 
