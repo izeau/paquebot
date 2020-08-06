@@ -17,7 +17,12 @@ const help = {
         return;
       }
 
-      await rtm.sendMessage(`*Unknown command: _${command}_*\nUse !help to list available commands.`, channel);
+      await rtm.sendMessage([
+        `*Unknown command: _${command}_*`,
+        'Use !help to list available commands.',
+        '',
+        'Et si t’es pas content tu fais une PR, connard.',
+      ].join('\n'), channel);
       return;
     }
 
