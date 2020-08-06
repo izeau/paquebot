@@ -19,6 +19,7 @@ process.on('uncaughtException', panic);
 process.on('unhandledRejection', panic);
 
 const commands = new Map();
+const triggers = new Map();
 
 for (const file of readdirSync('commands')) {
   if (!file.endsWith('.js')) {
@@ -30,9 +31,35 @@ for (const file of readdirSync('commands')) {
   commands.set(command.command, command);
 }
 
+for (const file of readdirSync('triggers')) {
+  if (!file.endsWith('.js')) {
+    continue;
+  }
+
+  const trigger = require(`./triggers/${file}`);
+
+  triggers.set(trigger.trigger, trigger);
+}
+
 rtm.start();
 
-rtm.on('message', async ({ type, channel, user, text }) => {
+rtm.on('reaction_added', ({ reaction, user, item_user: author, item: { type, channel, ts } }) => {
+  if (!triggers.has(reaction)) {
+    return;
+  }
+
+  triggers.get(reaction).added({ db, web, rtm, user, type, channel, author, ts });
+});
+
+rtm.on('reaction_removed', ({ reaction, user, item_user: author, item: { type, channel, ts } }) => {
+  if (!triggers.has(reaction)) {
+    return;
+  }
+
+  triggers.get(reaction).removed({ db, web, rtm, user, type, channel, author, ts });
+});
+
+rtm.on('message', async ({ channel, user, text }) => {
   if (!text || !text.startsWith('!')) {
     return;
   }
