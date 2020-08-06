@@ -11,7 +11,8 @@ const roll = {
       return;
     }
 
-    const [, diceCount = 1, faceCount] = parsed.map(Number);
+    const diceCount = Number(parsed[1]) || 1;
+    const faceCount = Number(parsed[2]);
     const throws = Array(diceCount);
     let total = 0;
 
