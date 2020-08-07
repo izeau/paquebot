@@ -25,6 +25,7 @@ const getInformation = async (type, id) => {
 
   return ky(`https://api.spotify.com/v1/${type}s/${id}`, {
     headers: { authorization: `Bearer ${token}` },
+    timeout: 1000,
     hooks: {
       afterResponse: [
         async (request, options, response) => {
@@ -53,6 +54,7 @@ const getToken = async () => {
     `https://accounts.spotify.com/api/token`,
     {
       body: params,
+      timeout: 1000,
       headers: { authorization: `Basic ${secret}` },
     }).json();
 
