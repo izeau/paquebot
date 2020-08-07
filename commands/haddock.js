@@ -73,7 +73,7 @@ const haddock = {
   command: '!haddock',
   args: [{ name: 'text', required: false, rest: true }],
   help: 'Insult your coworker. !haddock [name]',
-  async run([...text], rtm, user, channel) {
+  async run([...text], { rtm, channel }) {
     await rtm.sendMessage(insult(text.join(' ')), channel);
   },
 };
