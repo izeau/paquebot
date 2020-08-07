@@ -20,6 +20,7 @@ process.on('unhandledRejection', panic);
 
 const commands = new Map();
 const triggers = new Map();
+const reactions = [];
 
 for (const file of readdirSync('commands')) {
   if (!file.endsWith('.js')) {
@@ -29,6 +30,16 @@ for (const file of readdirSync('commands')) {
   const command = require(`./commands/${file}`);
 
   commands.set(command.command, command);
+}
+
+for (const file of readdirSync('reactions')) {
+  if (!file.endsWith('.js')) {
+    continue;
+  }
+
+  const reaction = require(`./reactions/${file}`);
+
+  reactions.push(reaction);
 }
 
 for (const file of readdirSync('triggers')) {
@@ -60,7 +71,20 @@ rtm.on('reaction_removed', ({ reaction, user, item_user: author, item: { type, c
 });
 
 rtm.on('message', async ({ channel, user, text }) => {
-  if (!text || !text.startsWith('!')) {
+  if (!text) {
+    return;
+  }
+
+  if (!text.startsWith('!')) {
+    for (const reaction of reactions) {
+      const match = reaction.regexp.exec(text);
+
+      if (match) {
+        await reaction.run(match, { db, web, rtm, user, channel, commands });
+        return;
+      }
+    }
+
     return;
   }
 
