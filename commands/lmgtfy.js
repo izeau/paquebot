@@ -11,7 +11,10 @@ const lmgtfy = {
       return;
     }
 
-    rtm.sendMessage(`<https://lmgtfy.com/?${stringify({ q: query.join(' ') })}|:crocleft::crocright:>`, channel);
+    const q = query.join(' ');
+    const uri = `https://lmgtfy.com/?${stringify({ q })}`;
+
+    rtm.sendMessage(`<${uri}|Need some help?>`, channel);
   },
 };
 
