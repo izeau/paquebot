@@ -3,54 +3,21 @@
 const sqlite3 = require('sqlite3');
 const { RTMClient } = require('@slack/rtm-api');
 const { WebClient } = require('@slack/web-api');
-const { readdirSync } = require('fs');
 
-const token = process.env.SLACK_TOKEN;
-const rtm = new RTMClient(token);
-const web = new WebClient(token);
 const db = new sqlite3.Database('paquebot.db', sqlite3.OPEN_READWRITE);
 
-const panic = exception => {
-  process.stderr.write(exception.stack);
-  process.exit(1);
-};
+const panic = require('./lib/panic.js')({ db });
+const commands = require('./lib/commands.js');
+const triggers = require('./lib/triggers.js');
+const reactions = require('./lib/reactions.js');
+const parseArgs = require('./lib/parse-args.js');
 
 process.on('uncaughtException', panic);
 process.on('unhandledRejection', panic);
 
-const commands = new Map();
-const triggers = new Map();
-const reactions = [];
-
-for (const file of readdirSync('commands')) {
-  if (!file.endsWith('.js')) {
-    continue;
-  }
-
-  const command = require(`./commands/${file}`);
-
-  commands.set(command.command, command);
-}
-
-for (const file of readdirSync('reactions')) {
-  if (!file.endsWith('.js')) {
-    continue;
-  }
-
-  const reaction = require(`./reactions/${file}`);
-
-  reactions.push(reaction);
-}
-
-for (const file of readdirSync('triggers')) {
-  if (!file.endsWith('.js')) {
-    continue;
-  }
-
-  const trigger = require(`./triggers/${file}`);
-
-  triggers.set(trigger.trigger, trigger);
-}
+const token = process.env.SLACK_TOKEN;
+const rtm = new RTMClient(token);
+const web = new WebClient(token);
 
 rtm.start();
 
@@ -98,14 +65,3 @@ rtm.on('message', async ({ channel, user, text }) => {
 
   commands.get(command).run(args, { db, web, rtm, user, channel, commands });
 });
-
-const parseArgs = text => {
-  const reg = /[^\s"]+|"([^"]*)"/g;
-  const args = [];
-
-  for (let match; match = reg.exec(text);) {
-    args.push(match[1] || match[0]);
-  }
-
-  return args.slice(1);
-};
