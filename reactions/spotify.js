@@ -29,12 +29,11 @@ const getInformation = async (type, id) => {
     hooks: {
       afterResponse: [
         async (request, options, response) => {
-          if (response.status !== 403) {
+          if (response.status !== 401) {
             return;
           }
 
           token = await getToken();
-
           request.headers.set('authorization', `Bearer ${token}`);
 
           return ky(request);
