@@ -3,6 +3,7 @@
 const ky = require('ky-universal');
 
 const bundlephobia = {
+  name: 'bundlephobia',
   regexp: /https:\/\/(?:www.)?npmjs.com\/(?:package\/)?((?:@[0-9A-Za-z_-]+\/)?[0-9A-Za-z_-]+)/,
   async run([, name], { rtm, channel }) {
     const uri = `https://bundlephobia.com/api/size?package=${name}`;

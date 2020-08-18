@@ -11,6 +11,7 @@ const commands = require('./lib/commands.js');
 const triggers = require('./lib/triggers.js');
 const reactions = require('./lib/reactions.js');
 const parseArgs = require('./lib/parse-args.js');
+const stats = require('./lib/stats.js');
 
 process.on('uncaughtException', panic);
 process.on('unhandledRejection', panic);
@@ -26,6 +27,7 @@ rtm.on('reaction_added', ({ reaction, user, item_user: author, item: { type, cha
     return;
   }
 
+  stats.track(db, 'trigger', reaction);
   triggers.get(reaction).added({ db, web, rtm, user, type, channel, author, ts });
 });
 
@@ -47,6 +49,7 @@ rtm.on('message', async ({ channel, user, text }) => {
       const match = reaction.regexp.exec(text);
 
       if (match) {
+        stats.track(db, 'reaction', reaction.name);
         await reaction.run(match, { db, web, rtm, user, channel, commands });
         return;
       }
@@ -55,7 +58,7 @@ rtm.on('message', async ({ channel, user, text }) => {
     return;
   }
 
-  const [command] = text.match(/^![0-9a-z]{0,32}/);
+  const [command] = text.match(/^![0-9a-z]{1,31}/);
   const args = parseArgs(text);
 
   if (!commands.has(command)) {
@@ -63,5 +66,6 @@ rtm.on('message', async ({ channel, user, text }) => {
     return;
   }
 
+  stats.track(db, 'command', command);
   commands.get(command).run(args, { db, web, rtm, user, channel, commands });
 });
