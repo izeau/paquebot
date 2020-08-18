@@ -14,6 +14,15 @@ db.serialize(() => {
       message  text
     ) without rowid
   `);
+
+  db.run(`
+    create table stats (
+      type varchar(15),
+      name varchar(32),
+      hits int          default 1,
+      primary key (type, name)
+    ) without rowid
+  `);
 });
 
 db.close();

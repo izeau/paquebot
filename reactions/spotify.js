@@ -4,6 +4,7 @@ const ky = require('ky-universal');
 const { format } = require('date-fns');
 
 const spotify = {
+  name: 'spotify',
   regexp: /\bspotify:(album|playlist|track):([0-9A-Za-z]+)\b/,
   async run([, type, id], { web, channel }) {
     const info = await getInformation(type, id);

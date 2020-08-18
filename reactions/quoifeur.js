@@ -10,6 +10,7 @@ const texts = [
 ];
 
 const quoifeur = {
+  name: 'quoifeur',
   regexp: /quoi[^0-9A-Za-z]*$/,
   async run([], { web, channel }) {
     await web.chat.postMessage({

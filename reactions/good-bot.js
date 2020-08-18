@@ -9,6 +9,7 @@ const reactions = [
 ];
 
 const goodBot = {
+  name: 'good-bot',
   regexp: /\bgood bot\b/i,
   async run([], { rtm, user, channel }) {
     await rtm.sendMessage([
