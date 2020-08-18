@@ -1,5 +1,7 @@
 'use strict';
 
+const { randomIndex } = require('../lib/random');
+
 const swears = [
   'amiral de bateau-lavoir',
   'amiral de bateau-lavoir',
@@ -77,9 +79,6 @@ const haddock = {
     await rtm.sendMessage(insult(text.join(' ')), channel);
   },
 };
-function randomIndex(arr) {
-  return arr[Math.trunc(Math.random() * arr.length)];
-}
 
 const insult = (text = '') => {
   const swear = randomIndex(swears);
