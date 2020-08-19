@@ -14,6 +14,7 @@ const texts = [
   '```\nF E U R\nE\nU\nR\n```',
   '```\n      F E U R\n    / E   / F\n  /   U /   E\nF E U R F E U\nE     F   /\nU     E /\nR F E U\n```',
   'Matuidi Charo',
+  ':tulip:',
 ];
 
 const quoifeur = {
