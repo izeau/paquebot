@@ -1,5 +1,7 @@
 'use strict';
 
+const { getMessage } = require('../lib/slack.js');
+
 const tm = {
   trigger: 'tm',
   async added({ db, web, user, type, channel, author, ts }) {
@@ -34,7 +36,6 @@ const tm = {
 
       await web.chat.postMessage({
         channel,
-        user,
         as_user: true,
         thread_ts: message.thread_ts || ts,
         text: `:tada: Congrats, <@${author}>! Your message has been added to the _!bestof_.`,
@@ -58,26 +59,6 @@ const tm = {
         ts = $ts
     `, { $ts: ts });
   },
-};
-
-const getMessage = async (web, channel, ts) => {
-  const { messages: [parent] } = await web.conversations.history({
-    channel,
-    latest: ts,
-    limit: 1,
-    inclusive: true,
-  });
-
-  if (parent.ts === ts) {
-    return parent;
-  }
-
-  const { messages } = await web.conversations.replies({
-    channel,
-    ts: parent.ts,
-  });
-
-  return messages.find(message => message.ts === ts);
 };
 
 module.exports = tm;
