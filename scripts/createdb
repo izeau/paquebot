@@ -23,6 +23,13 @@ db.serialize(() => {
       primary key (type, name)
     ) without rowid
   `);
+
+  db.run(`
+      create table projects (
+        channel varchar(32) primary key,
+        project varchar(64)
+      ) without rowid
+  `);
 });
 
 db.close();
