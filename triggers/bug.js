@@ -103,7 +103,7 @@ const newIssue = async (project, milestone, text) => {
       headers: { authorization: `Bearer ${TOKEN}` },
       json: {
         id: encoded,
-        title: text.length <= 120 ? text : `${text.slice(0, 120)}…`,
+        title: getTitle(text),
         description: [text, `_Added via Slack._`].join('\n\n'),
         milestone_id: milestone,
         labels: ['via: slack', 'type: bug'],
@@ -112,6 +112,16 @@ const newIssue = async (project, milestone, text) => {
   ).json();
 
   return { id, link };
+};
+
+const getTitle = (text) => {
+  const [firstLine] = text.split('\n', 1);
+
+  if (firstLine.length <= 120) {
+    return firstLine;
+  }
+
+  return `${firstLine.split(0, 120)}…`;
 };
 
 module.exports = bug;
