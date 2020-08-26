@@ -1,6 +1,6 @@
 'use strict';
 
-const { getMessage } = require('../lib/slack.js');
+const { getMessage, hasMoreThanOneReaction } = require('../lib/slack.js');
 const ky = require('ky-universal');
 
 const TOKEN = process.env.GITLAB_TOKEN;
@@ -15,8 +15,7 @@ const bug = {
 
     const message = await getMessage(web, channel, ts);
 
-    if (hasMoreThanOneReaction(message.reactions)) {
-      console.log('xxxxx');
+    if (hasMoreThanOneReaction(message, 'bug')) {
       return;
     }
 
@@ -56,12 +55,6 @@ const bug = {
     }
   },
   async removed() { },
-};
-
-const hasMoreThanOneReaction = (reactions) => {
-  const bugs = reactions.find(reaction => reaction.name === 'bug');
-
-  return bugs.count > 1;
 };
 
 const getProject = (db, channel) => {
