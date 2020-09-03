@@ -5,15 +5,15 @@ const pourcombien = {
   args: [{ name: "expr", required: true }],
   help: "Pour combien?",
   async run([expr], { rtm, channel }) {
-    const parsed = expr.match(/^([1-9][0-9]?)$/);
+    const parsed = expr.match(/^([1-9][0-9]{0,5})$/);
 
     if (parsed === null) {
       return;
     }
 
     const combien = Number(parsed[1]) || 1;
-    const combien1 = Math.floor(Math.random() * combien);
-    const combien2 = Math.floor(Math.random() * combien);
+    const combien1 = 1 + Math.floor(Math.random() * combien);
+    const combien2 = 1 + Math.floor(Math.random() * combien);
 
     if (combien1 === combien2)
       await rtm.sendMessage(
