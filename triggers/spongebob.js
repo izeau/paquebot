@@ -13,7 +13,7 @@ const sassy = {
     const mocked = mock(message.text, author);
 
     await rtm.sendMessage(
-      `Eh, <@${author}>, c'est toi : « ${mocked} » :spongebob:`,
+      `_« ${mocked} »_ :spongebob:`,
       channel,
     );
   },
