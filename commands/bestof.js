@@ -4,10 +4,10 @@ const { format } = require('date-fns');
 
 const bestof = {
   command: '!bestof',
-  args: [{ name: 'all', required: false }],
+  args: [{ name: 'whom', required: false }],
   help: 'Display a random featured message, or the list if passed `all`. Use the :tm: emoji to add messages.',
-  async run([all], { db, rtm, channel }) {
-    const getQuotes = all === 'all' ? getAllQuotes : getOneQuote;
+  async run([whom], { db, rtm, channel }) {
+    const getQuotes = whom === 'all' ? getAllQuotes : getOneQuote(whom);
 
     try {
       const quotes = await getQuotes(db);
@@ -40,20 +40,40 @@ const getAllQuotes = db => {
   });
 };
 
-const getOneQuote = db => {
+const getOneQuote = (whom) => db => {
+  const author = /^<@(U[^>]+)>$/.test(whom) ? whom.slice(2, -1) : null;
+
+  // LOL THIS IS SO UGLY
+  const query = author === null ? `
+    select
+      ts,
+      added_by as addedBy,
+      author,
+      message
+    from
+      bestof
+    order by
+      random()
+    limit 1
+  ` : `
+    select
+      ts,
+      added_by as addedBy,
+      author,
+      message
+    from
+      bestof
+    where
+      author = $author
+    order by
+      random()
+    limit 1
+  `;
+
+  const placeholders = author ? { $author: author } : {};
+
   return new Promise((resolve, reject) => {
-    db.all(`
-      select
-        ts,
-        added_by as addedBy,
-        author,
-        message
-      from
-        bestof
-      order by
-        random()
-      limit 1
-    `, (error, rows) => {
+    db.all(query, placeholders, (error, rows) => {
       if (error) {
         reject(error);
       } else {
@@ -64,6 +84,10 @@ const getOneQuote = db => {
 };
 
 const formatQuotes = (quotes) => {
+  if (quotes.length === 0) {
+    return '_I’ve got NOTHING on them. NOTHING!_';
+  }
+
   return quotes.map(quote => {
     const date = format(new Date(quote.ts * 1000), 'PPP');
 

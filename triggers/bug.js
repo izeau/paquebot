@@ -1,6 +1,6 @@
 'use strict';
 
-const { getMessage } = require('../lib/slack.js');
+const { getMessage, hasMoreThanOneReaction } = require('../lib/slack.js');
 const ky = require('ky-universal');
 
 const TOKEN = process.env.GITLAB_TOKEN;
@@ -15,8 +15,7 @@ const bug = {
 
     const message = await getMessage(web, channel, ts);
 
-    if (hasMoreThanOneReaction(message.reactions)) {
-      console.log('xxxxx');
+    if (hasMoreThanOneReaction(message, 'bug')) {
       return;
     }
 
@@ -58,12 +57,6 @@ const bug = {
   async removed() { },
 };
 
-const hasMoreThanOneReaction = (reactions) => {
-  const bugs = reactions.find(reaction => reaction.name === 'bug');
-
-  return bugs.count > 1;
-};
-
 const getProject = (db, channel) => {
   return new Promise((resolve, reject) => {
     db.get(`select project from projects where channel = $channel`, {
@@ -103,7 +96,7 @@ const newIssue = async (project, milestone, text) => {
       headers: { authorization: `Bearer ${TOKEN}` },
       json: {
         id: encoded,
-        title: text.length <= 120 ? text : `${text.slice(0, 120)}…`,
+        title: getTitle(text),
         description: [text, `_Added via Slack._`].join('\n\n'),
         milestone_id: milestone,
         labels: ['via: slack', 'type: bug'],
@@ -112,6 +105,16 @@ const newIssue = async (project, milestone, text) => {
   ).json();
 
   return { id, link };
+};
+
+const getTitle = (text) => {
+  const [firstLine] = text.split('\n', 1);
+
+  if (firstLine.length <= 120) {
+    return firstLine;
+  }
+
+  return `${firstLine.split(0, 120)}…`;
 };
 
 module.exports = bug;
