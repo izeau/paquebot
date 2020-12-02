@@ -4,6 +4,12 @@ const ky = require("ky-universal");
 
 const { AOC_LEADERBOARD_ID, AOC_SESSION_ID } = process.env;
 
+const nameToRepo = {
+  izeau: "<https://git.rednet.io/jdupouy/advent-of-code-2020/|izeau>",
+  thodubois: "<https://git.rednet.io/tdubois/advent-of-code-2020/|thodubois>",
+  frenchfal: "<https://git.rednet.io/bfalligan/advent-of-code-2020/|frenchfal>"
+}
+
 const aoc = {
   command: "!aoc",
   args: [],
@@ -22,7 +28,7 @@ const aoc = {
 
       await rtm.sendMessage(
         scores
-          .map(({ stars, name }) => `- ${name} (${stars} :star:)`)
+          .map(({ stars, name }) => `- ${nameToRepo[name] || name} (${stars} :star:)`)
           .concat(
             "",
             "Join the <https://adventofcode.com/2020/|Advent of Code> leaderboard! Enter the code: `1008654-380532fb`."
