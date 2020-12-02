@@ -44,7 +44,7 @@ rtm.on('message', async ({ channel, user, text }) => {
     return;
   }
 
-  if (!text.startsWith('!')) {
+  if (!text.startsWith('!') || text.length <= 1) {
     for (const reaction of reactions) {
       const match = reaction.regexp.exec(text);
 
